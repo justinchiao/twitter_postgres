@@ -93,10 +93,10 @@ def insert_tweet(connection,tweet):
     sql=sqlalchemy.sql.text('''
     SELECT id_tweets 
     FROM tweets
-    WHERE id_tweets = :id_tweets
+    WHERE CAST(id_tweets AS bigint) = :id_tweets
     ''')
     res = connection.execute(sql,{
-        'id_tweets':tweet['id'],
+        'id_tweets':tweet['id']
         })
     if res.first() is not None:
         return
@@ -137,7 +137,7 @@ def insert_tweet(connection,tweet):
             'favourites_count':tweet['user']['favourites_count'],
             'statuses_count':tweet['user']['statuses_count'], 
             'withheld_in_countries':tweet['user'].get('withheld_in_countries', None)
-            }
+            })
         ########################################
         # insert into the tweets table
         ########################################
@@ -208,7 +208,7 @@ def insert_tweet(connection,tweet):
         res = connection.execute(sql,
                 {'id_tweets':tweet['id'],
                 'id_users':tweet['user']['id'],
-                'created_at':tweet['created_at']
+                'created_at':tweet['created_at'],
                 'in_reply_to_status_id':tweet.get('in_reply_to_status_id', None),
                 'in_reply_to_user_id':tweet.get('in_reply_to_user_id', None),
                 'quoted_status_id':tweet.get('quoted_status_id', None),
@@ -223,7 +223,7 @@ def insert_tweet(connection,tweet):
                 'state_code':state_code,
                 'lang':remove_nulls(tweet.get('lang', None)),
                 'place_name':remove_nulls(place_name),
-                'geo':None)
+                'geo':None
                 }) 
         ########################################
         # insert into the tweet_urls table
@@ -301,7 +301,7 @@ def insert_tweet(connection,tweet):
                 VALUES(:id_tweets, :tag)
                 ON CONFLICT DO NOTHING
                     ''')
-             res = connection.execute(sql,
+            res = connection.execute(sql,
                     {'id_tweets':tweet['id'],
                     'tag': remove_nulls(tag)   
                     })
